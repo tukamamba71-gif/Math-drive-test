@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import { CheckCircle2, RotateCcw, XCircle, Sparkles, RefreshCw, Brain, Calculator, Shapes, BookOpen } from 'lucide-react'
@@ -8,20 +8,32 @@ import { PASS_RATIO } from '../hooks/useProgress'
 import { generateQuiz, generateStoryQuiz } from '../lib/quizGenerator'
 
 export default function Quiz({ questions: initialQuestions = [], topic = 'addition', moduleTitle = 'materi ini', onFinish, onExit, onNextModule }) {
+  const safeTopic = typeof topic === 'string' && topic.trim() ? topic : 'addition'
+  const safeTitle = typeof moduleTitle === 'string' && moduleTitle.trim() ? moduleTitle : 'materi ini'
+  const makeQuestions = (key = 'awal') => {
+    const supplied = Array.isArray(initialQuestions) ? initialQuestions.filter(q => q && typeof q.question === 'string' && Array.isArray(q.options) && q.options.length >= 2) : []
+    return supplied.length ? supplied : [...generateQuiz(safeTopic, 10, 'Dasar', key), ...generateStoryQuiz(safeTopic, 10, key)]
+  }
   const [batch, setBatch] = useState(0)
-  const [questions, setQuestions] = useState(() => initialQuestions.length ? initialQuestions : [...generateQuiz(topic, 10, 'Dasar'), ...generateStoryQuiz(topic, 10, 'awal')])
+  const [questions, setQuestions] = useState(() => makeQuestions('awal'))
   const [i, setI] = useState(0)
   const [picked, setPicked] = useState(null)
   const [score, setScore] = useState(0)
   const [results, setResults] = useState([])
   const [finished, setFinished] = useState(false)
   const [direction, setDirection] = useState(1)
-  const total = questions.length, q = questions[i], answered = picked !== null
+  useEffect(() => {
+    const key = `${safeTopic}-${Date.now()}`
+    setBatch(0)
+    setQuestions([...generateQuiz(safeTopic, 10, 'Dasar', key), ...generateStoryQuiz(safeTopic, 10, key)])
+    setI(0); setPicked(null); setScore(0); setResults([]); setFinished(false); setDirection(1)
+  }, [safeTopic, safeTitle])
+  const total = Array.isArray(questions) ? questions.length : 0, q = questions?.[i], answered = picked !== null
   const masteryTotal = Math.min(10, total)
   const masteryScore = results.slice(0, masteryTotal).filter(Boolean).length
   const passed = masteryTotal > 0 && masteryScore === masteryTotal
   const TopicIcon = ['perimeter','area','volume','composite','trig','functions','limits'].includes(topic) ? Shapes : ['variable','likeTerms','algebraMultiply','linear'].includes(topic) ? BookOpen : topic === 'word' ? Brain : Calculator
-  const correct = picked === q.answer
+  const correct = Boolean(q) && picked === q.answer
   const next = () => {
     if (i + 1 < total) { setDirection(1); setI(v => v + 1); setPicked(null) }
     else {
@@ -32,11 +44,11 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
   }
   const newPractice = () => {
     const nextBatch = batch + 1
-    setBatch(nextBatch); setQuestions([...generateQuiz(topic, 10, nextBatch % 3 === 0 ? 'HOTS / Penalaran' : nextBatch % 2 ? 'Dasar' : 'Menengah', String(nextBatch)), ...generateStoryQuiz(topic, 10, String(nextBatch))])
+    setBatch(nextBatch); setQuestions([...generateQuiz(safeTopic, 10, nextBatch % 3 === 0 ? 'HOTS / Penalaran' : nextBatch % 2 ? 'Dasar' : 'Menengah', String(nextBatch)), ...generateStoryQuiz(safeTopic, 10, String(nextBatch))])
     setI(0); setPicked(null); setScore(0); setResults([]); setFinished(false); setDirection(1)
   }
   const restart = () => { setI(0); setPicked(null); setScore(0); setResults([]); setFinished(false); setDirection(-1) }
-  if (!q || !Array.isArray(q.options) || q.options.length < 2) return <div className="panel"><h3>Soal belum tersedia</h3><p>Generator belum menghasilkan soal untuk materi ini.</p><button className="btn" onClick={newPractice}>Generate soal lagi</button></div>
+  if (!q || !Array.isArray(q.options) || q.options.length < 2) return <div className="panel"><h3>Soal belum tersedia</h3><p>Generator belum menghasilkan soal untuk {safeTitle}. Coba buat set soal baru.</p><button className="btn" onClick={newPractice}>Generate soal lagi</button>{onExit&&<button className="btn ghost" onClick={onExit}>Kembali ke materi</button>}</div>
   if (finished) return <motion.div className="panel result-panel" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{duration:.2,ease:'easeOut'}}>
     <div className={'result-orb ' + (passed ? 'success' : 'retry')}>{passed ? <Sparkles size={25}/> : <RotateCcw size={24}/>}</div>
     <div className="eyebrow">{passed ? 'SELESAI' : 'COBA LAGI'}</div><h2>{score} <span>/ {total}</span></h2>
@@ -46,7 +58,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
     <div className="row"><button className="btn" onClick={newPractice}><RefreshCw size={16}/> Latihan Soal Baru</button><button className="btn ghost" onClick={restart}><RotateCcw size={16}/> Ulangi set ini</button><button className="btn ghost" onClick={onExit}>Kembali ke materi</button>{passed&&onNextModule&&<button className="btn" onClick={onNextModule}>Materi berikutnya <span>→</span></button>}</div>
   </motion.div>
   return <motion.div className="panel quiz-panel" initial={{opacity:0,y:4}} animate={{opacity:1,y:0}} transition={{duration:.18,ease:'easeOut'}}>
-    <div className="quiz-top"><div className="quiz-topic-title"><span className="quiz-topic-icon"><TopicIcon size={18}/></span><div><span className="eyebrow">{i < 10 ? 'PEMAHAMAN MATERI' : 'SOAL CERITA'}</span><h3>{moduleTitle}</h3></div></div><span className="question-count">{i+1}<span> / {total}</span></span></div>
+    <div className="quiz-top"><div className="quiz-topic-title"><span className="quiz-topic-icon"><TopicIcon size={18}/></span><div><span className="eyebrow">{i < 10 ? 'PEMAHAMAN MATERI' : 'SOAL CERITA'}</span><h3>{safeTitle}</h3></div></div><span className="question-count">{i+1}<span> / {total}</span></span></div>
     <div className="quiz-badges"><span className="difficulty-badge">{q.difficulty || 'Dasar'}</span><span className="pattern-badge">{q.pattern || 'Latihan konsep'}</span></div>
     <ProgressBar value={i + (answered ? 1 : 0)} max={total} label={i < 10 ? 'Latihan pemahaman ' + (i + 1) + ' dari 10' : 'Soal cerita ' + (i - 9) + ' dari 10'}/>
     <AnimatePresence mode="wait" initial={false} custom={direction}><motion.div key={q.id || i} className="quiz-question-stage" custom={direction} initial={d => ({opacity:0,x:d > 0 ? 16 : -16})} animate={{opacity:1,x:0}} exit={d => ({opacity:0,x:d > 0 ? -12 : 12})} transition={{duration:.19,ease:[.22,.61,.36,1]}}>

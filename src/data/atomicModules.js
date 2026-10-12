@@ -34,5 +34,5 @@ const defs = [
 ]
 export const modules = defs.map((d, index) => {
  const content = makeLesson(d.title, d.concept, d.rule, d.steps, { problem: d.problem, steps: d.work }, d.context)
- return { ...d, ...content, quiz: [], order: index }
+ return { ...d, ...content, quiz: [], order: index, slug: d.id, nextModuleId: defs[index + 1]?.id ?? null }
 })

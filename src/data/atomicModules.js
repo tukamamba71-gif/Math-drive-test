@@ -52,7 +52,7 @@ const moduleIds = new Set(defs.map((d) => d.id))
 export const modules = defs.map((d, index) => {
  const content = makeLesson(d.title, d.concept, d.rule, d.steps, { problem: d.problem, steps: d.work }, d.context)
  const nextId = defs[index + 1]?.id ?? null
- return { ...d, ...content, quiz: [], order: index, nextId: nextId && moduleIds.has(nextId) ? nextId : null }
+ return { ...d, ...content, slug: d.id, quiz: [], order: index, prevModuleSlug: defs[index - 1]?.id ?? null, nextModuleSlug: nextId && moduleIds.has(nextId) ? nextId : null, nextId: nextId && moduleIds.has(nextId) ? nextId : null }
 })
 
 // Safe lookup helpers: callers can render a fallback instead of dereferencing missing data.

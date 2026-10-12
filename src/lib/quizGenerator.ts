@@ -22,7 +22,7 @@ function build(topic:Topic, difficulty:Difficulty): Omit<GeneratedQuestion,'id'|
  case 'area': {const p=int(3,20),q=int(2,15);value=p*q;question=`Lantai berukuran ${p} m × ${q} m. Berapa luasnya?`;explanation=`Luas persegi panjang = p × l = ${p} × ${q} = ${value} m².`;break}
  case 'volume': {const p=int(2,9),q=int(2,8),r=int(2,7);value=p*q*r;question=`Balok berukuran ${p} cm × ${q} cm × ${r} cm. Volumenya ...`;explanation=`V = p × l × t = ${p} × ${q} × ${r} = ${value} cm³.`;break}
  case 'composite': {const p=int(2,8),q=int(2,8),r=int(2,6);value=p*q+r*r*r;question=`HOTS • Bangun gabungan terdiri dari balok volume ${p*q} cm³ dan kubus sisi ${r} cm tanpa tumpang tindih. Volume totalnya ...`;explanation=`Volume balok = ${p} × ${q} × 1 = ${p*q} cm³. Volume kubus = ${r}³ = ${r*r*r} cm³. Jumlah = ${value} cm³.`;pattern='HOTS • Multi-langkah';break}
- case 'trig': {const pairs=[{a:3,b:5,n:.6},{a:5,b:13,n:5/13},{a:8,b:10,n:.8},{a:7,b:25,n:.28}];const p=pairs[int(0,pairs.length-1)];const opts=shuffle([p.n,Math.min(.99,p.n+.2),Math.max(.01,p.n-.15),.5]).map(v=>String(Number(v.toFixed(3))));return {question:`Pada segitiga siku-siku, sisi depan sudut θ = ${p.a} dan sisi miring = ${p.b}. Nilai sin θ adalah ...`,options:opts,answer:opts.indexOf(String(Number(p.n.toFixed(3)))),explanation:`sin θ = sisi depan ÷ sisi miring = ${p.a}/${p.b} ≈ ${Number(p.n.toFixed(3))}. Pilih rasio depan terhadap miring.`};}
+ case 'trig': {const pairs=[{a:3,b:5,n:.6},{a:5,b:13,n:5/13},{a:8,b:10,n:.8},{a:7,b:25,n:.28},{a:4,b:5,n:.8},{a:12,b:13,n:12/13},{a:9,b:15,n:.6},{a:5,b:12,n:5/12},{a:15,b:17,n:15/17},{a:20,b:29,n:20/29}];const p=pairs[int(0,pairs.length-1)];const opts=shuffle([p.n,Math.min(.99,p.n+.2),Math.max(.01,p.n-.15),.5]).map(v=>String(Number(v.toFixed(3))));return {question:`Pada segitiga siku-siku, sisi depan sudut θ = ${p.a} dan sisi miring = ${p.b}. Nilai sin θ adalah ...`,options:opts,answer:opts.indexOf(String(Number(p.n.toFixed(3)))),explanation:`sin θ = sisi depan ÷ sisi miring = ${p.a}/${p.b} ≈ ${Number(p.n.toFixed(3))}. Pilih rasio depan terhadap miring.`};}
  case 'functions': {const m=int(2,8),c=int(1,12),x=int(1,10);value=m*x+c;question=`Jika f(x) = ${m}x + ${c}, berapakah f(${x})?`;explanation=`Substitusikan x = ${x}: f(${x}) = ${m} × ${x} + ${c} = ${value}.`;break}
  case 'limits': {const c=int(1,20),x=int(1,10);value=x+c;question=`Tentukan limit x→${x} dari f(x) = x + ${c}.`;explanation=`Fungsi linear kontinu, jadi substitusi langsung: ${x} + ${c} = ${value}.`;break}
  default: value=a+b;question=`Hitung ${a} + ${b}.`;explanation=`Jumlahnya ${value}.`
@@ -39,6 +39,7 @@ export function generateQuiz(topic:string,count=5,difficulty:Difficulty='Dasar',
  const safeTopic=(valid.includes(topic as Topic)?topic:'addition') as Topic
  const out:GeneratedQuestion[]=[]
  const seen=new Set<string>()
- while(out.length<count){const q=build(safeTopic,difficulty);if(seen.has(q.question))continue;seen.add(q.question);out.push({...q,id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${out.length}-${seedKey}`,difficulty,pattern:q.pattern|| (difficulty==='HOTS / Penalaran'?'HOTS • Penalaran':'Latihan konsep')})}
+ let duplicateAttempts=0
+ while(out.length<count){const q=build(safeTopic,difficulty);if(seen.has(q.question)&&duplicateAttempts++<count*20)continue;seen.add(q.question);out.push({...q,id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${out.length}-${seedKey}`,difficulty,pattern:q.pattern|| (difficulty==='HOTS / Penalaran'?'HOTS • Penalaran':'Latihan konsep')})}
  return out
 }

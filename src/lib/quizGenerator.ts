@@ -28,9 +28,10 @@ function build(topic:Topic, difficulty:Difficulty): Omit<GeneratedQuestion,'id'|
  default: value=a+b;question=`Hitung ${a} + ${b}.`;explanation=`Jumlahnya ${value}.`
  }
  const delta=Math.max(1,Math.ceil(Math.abs(value)*.15)), raw=[value,value+delta,value-delta,value+int(2,delta+5)]
- const nums=[...new Set(raw)].filter(Number.isFinite)
- while(nums.length<4) nums.push(value+nums.length+3)
- const options=shuffle(nums.slice(0,4)).map(n=>fmt(n))
+ const nums=new Set(raw.filter(Number.isFinite))
+ // Pastikan selalu ada empat opsi berbeda, termasuk untuk hasil kecil atau negatif.
+ for(let offset=1;nums.size<4;offset++){const candidate=value+(offset%2===1?1:-1)*(delta+offset);nums.add(candidate)}
+ const options=shuffle([...nums].slice(0,4)).map(n=>fmt(n))
  return {question,options,answer:options.indexOf(fmt(value)),explanation}
 }
 export function generateQuiz(topic:string,count=5,difficulty:Difficulty='Dasar',seedKey='') : GeneratedQuestion[] {

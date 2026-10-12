@@ -60,3 +60,12 @@ h1,h2,h3,h4{letter-spacing:-.025em}
 .quiz-panel .feedback{overflow:hidden}
 .quiz-panel .next-btn{margin-top:15px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+/* Quiz metadata and curriculum progression */
+.quiz-badges{display:flex;flex-wrap:wrap;gap:7px;margin:-5px 0 14px}
+.difficulty-badge,.pattern-badge{display:inline-flex;align-items:center;width:max-content;max-width:100%;padding:6px 9px;border-radius:6px;font-size:10px;font-weight:750}
+.difficulty-badge{background:var(--primary-soft);color:var(--primary)}
+.pattern-badge{background:var(--surface-soft);border:1px solid var(--border);color:var(--muted)}
+.module-locked .module-open{cursor:not-allowed}
+.module-locked .module-open:disabled{opacity:.8}

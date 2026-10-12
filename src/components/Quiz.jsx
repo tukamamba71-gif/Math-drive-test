@@ -7,7 +7,7 @@ import ProgressBar from './ProgressBar'
 import { PASS_RATIO } from '../hooks/useProgress'
 import { generateQuiz, generateStoryQuiz } from '../lib/quizGenerator'
 
-export default function Quiz({ questions: initialQuestions = [], topic = 'addition', moduleTitle = 'materi ini', onFinish, onExit, onNextModule }) {
+export default function Quiz({ questions: initialQuestions = [], moduleId = '', topic = 'addition', moduleTitle = 'materi ini', onFinish, onExit, onNextModule }) {
   const safeTopic = typeof topic === 'string' && topic.trim() ? topic : 'addition'
   const safeTitle = typeof moduleTitle === 'string' && moduleTitle.trim() ? moduleTitle : 'materi ini'
   const makeQuestions = (key = 'awal') => {
@@ -27,7 +27,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
     setBatch(0)
     setQuestions([...generateQuiz(safeTopic, 10, 'Dasar', key), ...generateStoryQuiz(safeTopic, 10, key)])
     setI(0); setPicked(null); setScore(0); setResults([]); setFinished(false); setDirection(1)
-  }, [safeTopic, safeTitle])
+  }, [moduleId, safeTopic, safeTitle])
   const total = Array.isArray(questions) ? questions.length : 0, q = questions?.[i], answered = picked !== null
   const masteryTotal = Math.min(10, total)
   const masteryScore = results.slice(0, masteryTotal).filter(Boolean).length

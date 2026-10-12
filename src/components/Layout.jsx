@@ -1,0 +1,4 @@
+import ProgressBar from './ProgressBar'
+export default function Layout({done,total,onHome,onReset,children}) {
+ return <div className="app"><header className="header"><div className="header-inner"><button className="brand" onClick={onHome}>∑ MatematikaKu</button><div className="header-progress"><ProgressBar value={done} max={total} label={done+' dari '+total+' modul selesai'} /></div></div></header><main className="main">{children}</main><footer className="footer"><button className="link" onClick={() => {if(window.confirm('Hapus semua progress belajar?')) onReset()}}>Reset progress</button></footer></div>
+}

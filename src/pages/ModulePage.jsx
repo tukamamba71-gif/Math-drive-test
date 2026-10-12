@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { HelpCircle } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, BookOpen, CheckCircle2, Lightbulb, ListChecks, PlayCircle, Brain, Workflow, Compass, BadgeCheck, HelpCircle } from 'lucide-react'
+import { ArrowLeft, BookOpen, CheckCircle2, Lightbulb, ListChecks, PlayCircle, Brain, Workflow, Compass, BadgeCheck } from 'lucide-react'
 import { Rich, Tex } from '../components/Tex'
 import Quiz from '../components/Quiz'
 const TABS=[['materi','Materi',BookOpen],['contoh','Contoh soal',ListChecks],['kuis','Kuis interaktif',PlayCircle]]

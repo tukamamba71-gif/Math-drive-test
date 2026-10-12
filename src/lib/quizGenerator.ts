@@ -55,3 +55,40 @@ export function generateQuiz(topic:string,count=5,difficulty:Difficulty='Dasar',
  }
  return out
 }
+
+export function generateStoryQuiz(topic:string,count=10,seedKey=''): GeneratedQuestion[] {
+ const valid:Topic[]=['addition','subtraction','multiplication','division','mixed','word','variable','likeTerms','algebraMultiply','linear','perimeter','area','volume','composite','trig','functions','limits']
+ const safeTopic=(valid.includes(topic as Topic)?topic:'addition') as Topic
+ const n=Math.max(1,Math.min(20,Number.isFinite(count)?Math.floor(count):10))
+ const make=(i:number):GeneratedQuestion=>{
+   const a=int(3,18), b=int(2,12), c=int(2,9)
+   let value=0, question='', explanation='', pattern='Soal cerita • Penerapan'
+   switch(safeTopic){
+    case 'addition': value=a+b; question=`Rani mengumpulkan ${a} stiker pada hari Senin dan ${b} stiker pada hari Selasa. Berapa stiker Rani seluruhnya?`; explanation=`Gabungkan kedua jumlah: ${a} + ${b} = ${value} stiker.`; break
+    case 'subtraction': {const hi=Math.max(a,b),lo=Math.min(a,b);value=hi-lo;question=`Perpustakaan memiliki ${hi} buku. Sebanyak ${lo} buku dipinjam. Berapa buku yang tersisa?`;explanation=`Kurangi buku yang dipinjam: ${hi} − ${lo} = ${value} buku.`;break}
+    case 'multiplication': value=a*b; question=`Ada ${a} kotak pensil dengan ${b} pensil di setiap kotak. Berapa jumlah pensil semuanya?`; explanation=`Kelompok sama banyak: ${a} × ${b} = ${value} pensil.`; break
+    case 'division': {const d=int(2,10),q=int(2,12);value=q;question=`Sebanyak ${d*q} kue dibagi rata kepada ${d} anak. Berapa kue yang diterima setiap anak?`;explanation=`Bagi jumlah kue dengan jumlah anak: ${d*q} ÷ ${d} = ${q} kue per anak.`;break}
+    case 'mixed': {const x=int(4,20),y=int(2,8),z=int(1,6);value=x+y*z;question=`Dina membeli ${y} kantong apel berisi ${z} apel per kantong, lalu mendapat ${x} apel lagi. Berapa apel Dina sekarang?`;explanation=`Hitung apel dalam kantong dahulu: ${y} × ${z} = ${y*z}. Tambahkan ${x}: total ${x} + ${y*z} = ${value} apel.`;break}
+    case 'word': {const q=int(2,8),price=int(4,20)*1000,disc=int(1,4)*1000;value=q*price-disc;question=`Sebuah toko menjual ${q} buku seharga Rp${fmt(price)} per buku dengan potongan total Rp${fmt(disc)}. Berapa yang harus dibayar?`;explanation=`Total awal ${q} × Rp${fmt(price)} = Rp${fmt(q*price)}. Setelah diskon: Rp${fmt(q*price)} − Rp${fmt(disc)} = Rp${fmt(value)}.`;break}
+    case 'variable': {const k=int(2,8),xv=int(2,9),fee=int(1,10);value=k*xv+fee;question=`Biaya perjalanan terdiri dari biaya tetap Rp${fmt(fee*1000)} dan Rp${fmt(k*1000)} untuk setiap kilometer. Jika jarak ${xv} km, berapa biaya total dalam ribuan rupiah?`;explanation=`Model biaya adalah ${k}x + ${fee}. Untuk x=${xv}: ${k}×${xv}+${fee}=${value} ribu rupiah.`;break}
+    case 'likeTerms': {const p=int(2,8),q=int(1,7);value=p+q;question=`Satu paket berisi ${p} pensil dan paket lain berisi ${q} pensil. Jika x menyatakan isi satu unit paket yang sama, koefisien total dari ${p}x + ${q}x adalah ...`;explanation=`Keduanya suku sejenis, jadi koefisien dijumlahkan: ${p}+${q}=${value}. Hasilnya ${value}x.`;break}
+    case 'algebraMultiply': {const p=int(2,6),q=int(2,7),v=int(1,5);value=p*q;question=`Sebuah persegi panjang memiliki lebar ${p}x dan panjang (${q}x + ${v}). Koefisien suku x² saat luasnya dikembangkan adalah ...`;explanation=`Luas = ${p}x(${q}x+${v}). Suku x² berasal dari ${p}x×${q}x=${value}x², jadi koefisiennya ${value}.`;break}
+    case 'linear': {const xv=int(2,12),m=int(2,7),k=int(1,12);value=xv;question=`Harga ${m} barang yang sama ditambah biaya kemasan Rp${fmt(k*1000)} menjadi Rp${fmt((m*xv+k)*1000)} ribu. Jika harga tiap barang x ribu rupiah, persamaan ${m}x+${k}=${m*xv+k}. Berapa x?`;explanation=`Kurangi ${k} dari kedua sisi lalu bagi dengan ${m}: x=${xv}.`;break}
+    case 'perimeter': {const p=int(4,15),q=int(3,10);value=2*(p+q);question=`Kebun berbentuk persegi panjang memiliki panjang ${p} m dan lebar ${q} m. Berapa meter pagar untuk mengelilinginya?`;explanation=`Keliling = 2(p+l) = 2(${p}+${q}) = ${value} m.`;break}
+    case 'area': {const p=int(3,15),q=int(2,10);value=p*q;question=`Lantai ruangan berukuran ${p} m × ${q} m akan dipasangi karpet. Berapa luas karpet yang diperlukan?`;explanation=`Luas = panjang × lebar = ${p}×${q} = ${value} m².`;break}
+    case 'volume': {const p=int(2,8),q=int(2,6),v=int(2,5);value=p*q*v;question=`Akuarium berbentuk balok berukuran ${p} dm × ${q} dm × ${v} dm. Berapa volumenya?`;explanation=`Volume = p×l×t = ${p}×${q}×${v} = ${value} dm³.`;break}
+    case 'composite': {const p=int(2,6),q=int(2,5);value=p*q+q*q*q;question=`Sebuah pajangan terdiri dari balok bervolume ${p*q} cm³ dan kubus sisi ${q} cm tanpa tumpang tindih. Berapa volume seluruhnya?`;explanation=`Jumlahkan volume kedua bagian: ${p*q} + ${q}³ = ${p*q} + ${q*q*q} = ${value} cm³.`;break}
+    case 'trig': {const pairs=[{a:3,b:5,n:.6},{a:5,b:13,n:5/13},{a:8,b:10,n:.8},{a:7,b:25,n:.28}];const t=pairs[int(0,pairs.length-1)];value=Number(t.n.toFixed(3));question=`Sebuah penyangga membentuk segitiga siku-siku. Sisi di depan sudut θ sepanjang ${t.a} m dan sisi miring ${t.b} m. Berapa nilai sin θ?`;explanation=`sin θ = sisi depan ÷ sisi miring = ${t.a}/${t.b} ≈ ${value}.`;break}
+    case 'functions': {const m=int(2,6),k=int(1,9),xv=int(1,8);value=m*xv+k;question=`Biaya layanan mengikuti f(x)=${m}x+${k} ribu rupiah, dengan x jumlah unit. Berapa biaya untuk ${xv} unit?`;explanation=`Substitusi x=${xv}: f(${xv})=${m}×${xv}+${k}=${value} ribu rupiah.`;break}
+    case 'limits': {const k=int(2,12),xv=int(1,8);value=xv+k;question=`Biaya mendekati aturan f(x)=x+${k} ribu rupiah ketika jumlah x mendekati ${xv}. Berapa nilai limit f(x) saat x→${xv}?`;explanation=`Karena fungsi linear kontinu, substitusi langsung: ${xv}+${k}=${value}.`;break}
+   }
+   const candidates=[value,value+int(1,5),value-int(1,4),value+int(6,10)]
+   const opts=shuffle([...new Set(candidates)].slice(0,4).concat([]).map(String))
+   while(opts.length<4)opts.push(String(value+opts.length+11))
+   const answer=opts.indexOf(String(value))
+   return {id:`story-${Date.now()}-${seedKey}-${i}-${Math.random().toString(36).slice(2)}`,question,options:opts,answer,explanation,difficulty:'Menengah',pattern}
+ }
+ const out:GeneratedQuestion[]=[]
+ for(let i=0;i<n;i++)out.push(make(i))
+ return out
+}

@@ -37,9 +37,21 @@ function build(topic:Topic, difficulty:Difficulty): Omit<GeneratedQuestion,'id'|
 export function generateQuiz(topic:string,count=5,difficulty:Difficulty='Dasar',seedKey='') : GeneratedQuestion[] {
  const valid:Topic[]=['addition','subtraction','multiplication','division','mixed','word','variable','likeTerms','algebraMultiply','linear','perimeter','area','volume','composite','trig','functions','limits']
  const safeTopic=(valid.includes(topic as Topic)?topic:'addition') as Topic
+ const safeCount=Math.max(1,Math.min(20,Number.isFinite(count)?Math.floor(count):5))
  const out:GeneratedQuestion[]=[]
  const seen=new Set<string>()
- let duplicateAttempts=0
- while(out.length<count){const q=build(safeTopic,difficulty);if(seen.has(q.question)&&duplicateAttempts++<count*20)continue;seen.add(q.question);out.push({...q,id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${out.length}-${seedKey}`,difficulty,pattern:q.pattern|| (difficulty==='HOTS / Penalaran'?'HOTS • Penalaran':'Latihan konsep')})}
+ // Never let a small/limited question pool trap the app in a generation loop.
+ for(let attempt=0;out.length<safeCount && attempt<safeCount*30;attempt++){
+   const q=build(safeTopic,difficulty)
+   if(seen.has(q.question))continue
+   seen.add(q.question)
+   out.push({...q,id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${out.length}-${seedKey}`,difficulty,pattern:q.pattern|| (difficulty==='HOTS / Penalaran'?'HOTS • Penalaran':'Latihan konsep')})
+ }
+ // If a topic has a limited number of patterns, fill the requested set with valid questions
+ // rather than leaving the quiz empty or looping forever.
+ while(out.length<safeCount){
+   const q=build(safeTopic,difficulty)
+   out.push({...q,id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${out.length}-fallback-${seedKey}`,difficulty,pattern:q.pattern||'Latihan konsep'})
+ }
  return out
 }

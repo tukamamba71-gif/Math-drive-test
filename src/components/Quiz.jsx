@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import confetti from 'canvas-confetti'
-import { CheckCircle2, RotateCcw, XCircle, Sparkles, RefreshCw } from 'lucide-react'
+import { CheckCircle2, RotateCcw, XCircle, Sparkles, RefreshCw, Brain, Calculator, Shapes, BookOpen } from 'lucide-react'
 import { Rich } from './Tex'
 import ProgressBar from './ProgressBar'
 import { PASS_RATIO } from '../hooks/useProgress'
@@ -16,6 +16,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
   const [finished, setFinished] = useState(false)
   const [direction, setDirection] = useState(1)
   const total = questions.length, q = questions[i], answered = picked !== null
+  const TopicIcon = ['perimeter','area','volume','composite','trig','functions','limits'].includes(topic) ? Shapes : ['variable','likeTerms','algebraMultiply','linear'].includes(topic) ? BookOpen : topic === 'word' ? Brain : Calculator
   const correct = picked === q.answer, passed = score / total >= PASS_RATIO
   const next = () => {
     if (i + 1 < total) { setDirection(1); setI(v => v + 1); setPicked(null) }
@@ -40,7 +41,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
     <div className="row"><button className="btn" onClick={newPractice}><RefreshCw size={16}/> Latihan Soal Baru</button><button className="btn ghost" onClick={restart}><RotateCcw size={16}/> Ulangi set ini</button><button className="btn ghost" onClick={onExit}>Kembali ke materi</button></div>
   </motion.div>
   return <motion.div className="panel quiz-panel" initial={{opacity:0,y:4}} animate={{opacity:1,y:0}} transition={{duration:.18,ease:'easeOut'}}>
-    <div className="quiz-top"><div><span className="eyebrow">LATIHAN DINAMIS</span><h3>{moduleTitle}</h3></div><span className="question-count">{i+1}<span> / {total}</span></span></div>
+    <div className="quiz-top"><div className="quiz-topic-title"><span className="quiz-topic-icon"><TopicIcon size={18}/></span><div><span className="eyebrow">LATIHAN DINAMIS</span><h3>{moduleTitle}</h3></div></div><span className="question-count">{i+1}<span> / {total}</span></span></div>
     <div className="quiz-badges"><span className="difficulty-badge">{q.difficulty || 'Dasar'}</span><span className="pattern-badge">{q.pattern || 'Latihan konsep'}</span></div>
     <ProgressBar value={i + (answered ? 1 : 0)} max={total} label={'Soal ' + (i + 1) + ' dari ' + total}/>
     <AnimatePresence mode="wait" initial={false} custom={direction}><motion.div key={q.id || i} className="quiz-question-stage" custom={direction} initial={d => ({opacity:0,x:d > 0 ? 16 : -16})} animate={{opacity:1,x:0}} exit={d => ({opacity:0,x:d > 0 ? -12 : 12})} transition={{duration:.19,ease:[.22,.61,.36,1]}}>

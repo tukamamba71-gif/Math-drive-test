@@ -14,6 +14,7 @@ export default function App() {
   const current = modules.find(m => m.id === currentId)
   const done = modules.filter(m => progress[m.id]?.done).length
   const openModule = useCallback(id => { const index = modules.findIndex(m => m.id === id); if (index > 0 && !progress[modules[index - 1].id]?.done) return; setCurrentId(id) }, [progress])
+  const openNextModule = useCallback(() => { const index = modules.findIndex(m => m.id === currentId); const next = modules[index + 1]; if (next && progress[currentId]?.done) setCurrentId(next.id); else setCurrentId(null) }, [currentId, progress])
   const toggleTheme = () => setTheme(old => {
     const next = old === 'light' ? 'dark' : 'light'
     try { localStorage.setItem('matematikaku:theme', next) } catch {}
@@ -24,8 +25,8 @@ export default function App() {
     try { localStorage.setItem('matematikaku:accent', value) } catch {}
   }
   const page = useMemo(() => current
-    ? <ModulePage key={current.id} mod={current} onBack={() => setCurrentId(null)} onFinish={(score, total) => record(current.id, score, total)} />
-    : <Home modules={modules} progress={progress} streak={streak} badges={badges} onOpen={openModule} />, [current, progress, streak, badges, openModule, record])
+    ? <ModulePage key={current.id} mod={current} onBack={() => setCurrentId(null)} onFinish={(score, total) => record(current.id, score, total)} onNextModule={openNextModule} />
+    : <Home modules={modules} progress={progress} streak={streak} badges={badges} onOpen={openModule} />, [current, progress, streak, badges, openModule, openNextModule, record])
   return <div data-theme={theme} data-accent={accent} className="theme-root">
     <Layout done={done} total={modules.length} modules={modules} progress={progress} streak={streak} badges={badges}
       onHome={() => setCurrentId(null)} onOpen={openModule} onReset={reset} theme={theme} onToggleTheme={toggleTheme}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HelpCircle } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, BookOpen, CheckCircle2, Lightbulb, ListChecks, PlayCircle, Brain, Workflow, Compass, BadgeCheck } from 'lucide-react'

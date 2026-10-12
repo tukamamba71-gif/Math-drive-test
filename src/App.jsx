@@ -25,7 +25,7 @@ export default function App() {
     try { localStorage.setItem('matematikaku:accent', value) } catch {}
   }
   const page = useMemo(() => current
-    ? <ModulePage key={current.id} mod={current} onBack={() => setCurrentId(null)} onFinish={(score, total) => record(current.id, score, total)} onNextModule={openNextModule} />
+    ? <ModulePage key={current.id} mod={current} onBack={() => setCurrentId(null)} onFinish={(score, total, masteryScore, masteryTotal) => record(current.id, score, total, masteryScore, masteryTotal)} onNextModule={openNextModule} />
     : <Home modules={modules} progress={progress} streak={streak} badges={badges} onOpen={openModule} />, [current, progress, streak, badges, openModule, openNextModule, record])
   return <div data-theme={theme} data-accent={accent} className="theme-root">
     <Layout done={done} total={modules.length} modules={modules} progress={progress} streak={streak} badges={badges}

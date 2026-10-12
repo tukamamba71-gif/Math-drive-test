@@ -5,11 +5,11 @@ import { CheckCircle2, RotateCcw, XCircle, Sparkles, RefreshCw, Brain, Calculato
 import { Rich } from './Tex'
 import ProgressBar from './ProgressBar'
 import { PASS_RATIO } from '../hooks/useProgress'
-import { generateQuiz } from '../lib/quizGenerator'
+import { generateQuiz, generateStoryQuiz } from '../lib/quizGenerator'
 
 export default function Quiz({ questions: initialQuestions = [], topic = 'addition', moduleTitle = 'materi ini', onFinish, onExit, onNextModule }) {
   const [batch, setBatch] = useState(0)
-  const [questions, setQuestions] = useState(() => initialQuestions.length ? initialQuestions : generateQuiz(topic, 10, 'Dasar'))
+  const [questions, setQuestions] = useState(() => initialQuestions.length ? initialQuestions : [...generateQuiz(topic, 10, 'Dasar'), ...generateStoryQuiz(topic, 10, 'awal')])
   const [i, setI] = useState(0)
   const [picked, setPicked] = useState(null)
   const [score, setScore] = useState(0)
@@ -28,7 +28,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
   }
   const newPractice = () => {
     const nextBatch = batch + 1
-    setBatch(nextBatch); setQuestions(generateQuiz(topic, 10, nextBatch % 3 === 0 ? 'HOTS / Penalaran' : nextBatch % 2 ? 'Dasar' : 'Menengah', String(nextBatch)))
+    setBatch(nextBatch); setQuestions([...generateQuiz(topic, 10, nextBatch % 3 === 0 ? 'HOTS / Penalaran' : nextBatch % 2 ? 'Dasar' : 'Menengah', String(nextBatch)), ...generateStoryQuiz(topic, 10, String(nextBatch))])
     setI(0); setPicked(null); setScore(0); setFinished(false); setDirection(1)
   }
   const restart = () => { setI(0); setPicked(null); setScore(0); setFinished(false); setDirection(-1) }
@@ -41,9 +41,9 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
     <div className="row"><button className="btn" onClick={newPractice}><RefreshCw size={16}/> Latihan Soal Baru</button><button className="btn ghost" onClick={restart}><RotateCcw size={16}/> Ulangi set ini</button><button className="btn ghost" onClick={onExit}>Kembali ke materi</button>{passed&&onNextModule&&<button className="btn" onClick={onNextModule}>Materi berikutnya <span>→</span></button>}</div>
   </motion.div>
   return <motion.div className="panel quiz-panel" initial={{opacity:0,y:4}} animate={{opacity:1,y:0}} transition={{duration:.18,ease:'easeOut'}}>
-    <div className="quiz-top"><div className="quiz-topic-title"><span className="quiz-topic-icon"><TopicIcon size={18}/></span><div><span className="eyebrow">LATIHAN DINAMIS</span><h3>{moduleTitle}</h3></div></div><span className="question-count">{i+1}<span> / {total}</span></span></div>
+    <div className="quiz-top"><div className="quiz-topic-title"><span className="quiz-topic-icon"><TopicIcon size={18}/></span><div><span className="eyebrow">{i < 10 ? 'PEMAHAMAN MATERI' : 'SOAL CERITA'}</span><h3>{moduleTitle}</h3></div></div><span className="question-count">{i+1}<span> / {total}</span></span></div>
     <div className="quiz-badges"><span className="difficulty-badge">{q.difficulty || 'Dasar'}</span><span className="pattern-badge">{q.pattern || 'Latihan konsep'}</span></div>
-    <ProgressBar value={i + (answered ? 1 : 0)} max={total} label={'Soal ' + (i + 1) + ' dari ' + total}/>
+    <ProgressBar value={i + (answered ? 1 : 0)} max={total} label={i < 10 ? 'Latihan pemahaman ' + (i + 1) + ' dari 10' : 'Soal cerita ' + (i - 9) + ' dari 10'}/>
     <AnimatePresence mode="wait" initial={false} custom={direction}><motion.div key={q.id || i} className="quiz-question-stage" custom={direction} initial={d => ({opacity:0,x:d > 0 ? 16 : -16})} animate={{opacity:1,x:0}} exit={d => ({opacity:0,x:d > 0 ? -12 : 12})} transition={{duration:.19,ease:[.22,.61,.36,1]}}>
       <p className="question"><Rich text={q.question}/></p>
       <div className="options">{q.options.map((opt, idx) => {let cls='option';if(answered&&idx===q.answer)cls+=' correct';else if(answered&&idx===picked)cls+=' wrong';return <motion.button key={idx} whileHover={!answered?{y:-1}:undefined} whileTap={!answered?{scale:.995}:undefined} animate={answered&&idx===picked&&!correct?{x:[0,-3,3,-2,2,0]}:{}} transition={{duration:.22}} className={cls} disabled={answered} onClick={()=>{setPicked(idx);if(idx===q.answer)setScore(s=>s+1)}}><span className="option-letter">{String.fromCharCode(65+idx)}</span><span className="option-text"><Rich text={opt}/></span>{answered&&idx===q.answer&&<CheckCircle2 size={18} />}{answered&&idx===picked&&!correct&&<XCircle size={18}/>}</motion.button>})}</div>

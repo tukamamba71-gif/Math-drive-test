@@ -48,7 +48,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
     setI(0); setPicked(null); setScore(0); setResults([]); setFinished(false); setDirection(1)
   }
   const restart = () => { setI(0); setPicked(null); setScore(0); setResults([]); setFinished(false); setDirection(-1) }
-  if (!q || !Array.isArray(q.options) || q.options.length < 2) return <div className="panel"><h3>Soal belum tersedia</h3><p>Generator belum menghasilkan soal untuk {safeTitle}. Coba buat set soal baru.</p><button className="btn" onClick={newPractice}>Generate soal lagi</button>{onExit&&<button className="btn ghost" onClick={onExit}>Kembali ke materi</button>}</div>
+  if (!q || !Array.isArray(q.options) || q.options.length < 2 || !Number.isInteger(q.answer) || q.answer < 0 || q.answer >= q.options.length) return <div className="panel"><h3>Soal belum tersedia</h3><p>Generator belum menghasilkan soal untuk {safeTitle}. Coba buat set soal baru.</p><button className="btn" onClick={newPractice}>Generate soal lagi</button>{onExit&&<button className="btn ghost" onClick={onExit}>Kembali ke materi</button>}</div>
   if (finished) return <motion.div className="panel result-panel" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{duration:.2,ease:'easeOut'}}>
     <div className={'result-orb ' + (passed ? 'success' : 'retry')}>{passed ? <Sparkles size={25}/> : <RotateCcw size={24}/>}</div>
     <div className="eyebrow">{passed ? 'SELESAI' : 'COBA LAGI'}</div><h2>{score} <span>/ {total}</span></h2>

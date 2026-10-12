@@ -34,6 +34,7 @@ export default function Quiz({ questions: initialQuestions = [], moduleId = '', 
   const passed = masteryTotal > 0 && masteryScore === masteryTotal
   const TopicIcon = ['perimeter','area','volume','composite','trig','functions','limits'].includes(topic) ? Shapes : ['variable','likeTerms','algebraMultiply','linear'].includes(topic) ? BookOpen : topic === 'word' ? Brain : Calculator
   const correct = Boolean(q) && picked === q.answer
+  const bossHp = Math.max(0, 100 - score * 10)
   const next = () => {
     if (i + 1 < total) { setDirection(1); setI(v => v + 1); setPicked(null) }
     else {
@@ -60,6 +61,7 @@ export default function Quiz({ questions: initialQuestions = [], moduleId = '', 
   return <motion.div className="panel quiz-panel" initial={{opacity:0,y:4}} animate={{opacity:1,y:0}} transition={{duration:.18,ease:'easeOut'}}>
     <div className="quiz-top"><div className="quiz-topic-title"><span className="quiz-topic-icon"><TopicIcon size={18}/></span><div><span className="eyebrow">{i < 10 ? 'PEMAHAMAN MATERI' : 'SOAL CERITA'}</span><h3>{safeTitle}</h3></div></div><span className="question-count">{i+1}<span> / {total}</span></span></div>
     <div className="quiz-badges"><span className="difficulty-badge">{q.difficulty || 'Dasar'}</span><span className="pattern-badge">{q.pattern || 'Latihan konsep'}</span></div>
+    <div className="quiz-boss" aria-label={'HP Boss ' + bossHp + ' persen'}><div className="quiz-boss-heading"><span>⚔️ BOSS BATTLE · PENJAGA KONSEP</span><strong>{bossHp} HP</strong></div><div className="quiz-boss-track"><motion.div className="quiz-boss-fill" initial={false} animate={{width: bossHp + '%'}} transition={{duration:.35,ease:'easeOut'}} /></div><small>{bossHp===0?'Boss dikalahkan! Teruskan latihan untuk mengunci penguasaan.':'Jawaban benar mengurangi HP boss sebesar 10.'}</small></div>
     <ProgressBar value={i + (answered ? 1 : 0)} max={total} label={i < 10 ? 'Latihan pemahaman ' + (i + 1) + ' dari 10' : 'Soal cerita ' + (i - 9) + ' dari 10'}/>
     <AnimatePresence mode="wait" initial={false} custom={direction}><motion.div key={q.id || i} className="quiz-question-stage" custom={direction} initial={d => ({opacity:0,x:d > 0 ? 16 : -16})} animate={{opacity:1,x:0}} exit={d => ({opacity:0,x:d > 0 ? -12 : 12})} transition={{duration:.19,ease:[.22,.61,.36,1]}}>
       <p className="question"><Rich text={q.question}/></p>

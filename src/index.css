@@ -69,3 +69,41 @@ h1,h2,h3,h4{letter-spacing:-.025em}
 .pattern-badge{background:var(--surface-soft);border:1px solid var(--border);color:var(--muted)}
 .module-locked .module-open{cursor:not-allowed}
 .module-locked .module-open:disabled{opacity:.8}
+
+
+/* Dark-mode surface hardening: keep every learning surface on theme tokens. */
+[data-theme="dark"] .theme-root,
+[data-theme="dark"] .app-shell,
+[data-theme="dark"] .app-main,
+[data-theme="dark"] .content-area,
+[data-theme="dark"] .footer { background-color: var(--bg); color: var(--text); }
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] .topbar,
+[data-theme="dark"] .mobile-progress,
+[data-theme="dark"] .lesson-content,
+[data-theme="dark"] .example-card,
+[data-theme="dark"] .quiz-panel,
+[data-theme="dark"] .panel,
+[data-theme="dark"] .module-card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .command-menu,
+[data-theme="dark"] .palette-popover,
+[data-theme="dark"] .mobile-drawer,
+[data-theme="dark"] .option { background-color: var(--surface); color: var(--text); border-color: var(--border); }
+[data-theme="dark"] .module-intro { background: linear-gradient(115deg, var(--surface), var(--surface-soft)); color: var(--text); }
+[data-theme="dark"] .tabs,
+[data-theme="dark"] .example-problem,
+[data-theme="dark"] .lesson-math,
+[data-theme="dark"] .graph-visual,
+[data-theme="dark"] .level-pill,
+[data-theme="dark"] .module-open,
+[data-theme="dark"] .pattern-badge,
+[data-theme="dark"] .option-letter { background-color: var(--surface-soft); color: var(--text); border-color: var(--border); }
+[data-theme="dark"] .tab.active { background: var(--surface); color: var(--primary); }
+[data-theme="dark"] .lesson-paragraph,
+[data-theme="dark"] .lesson-subheading,
+[data-theme="dark"] .example-card h3,
+[data-theme="dark"] .question,
+[data-theme="dark"] .quiz-top h3 { color: var(--text); }
+[data-theme="dark"] .lesson-callout { background: var(--primary-soft); color: var(--primary); border-color: var(--border); }
+[data-theme="dark"] .lesson-callout p { color: var(--text); }

@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Layout from './components/Layout'
 import Home from './pages/Home'
 import ModulePage from './pages/ModulePage'
-import { modules } from './data/modules'
+import { modules, getModuleById, getNextModule } from './data/modules'
 import { useProgress } from './hooks/useProgress'
 
 export default function App() {
@@ -11,7 +11,7 @@ export default function App() {
   const [currentId, setCurrentId] = useState(null)
   const [theme, setTheme] = useState(() => { try { return localStorage.getItem('matematikaku:theme') || 'light' } catch { return 'light' } })
   const [accent, setAccent] = useState(() => { try { return localStorage.getItem('matematikaku:accent') || 'terracotta' } catch { return 'terracotta' } })
-  const current = modules.find(m => m.id === currentId) ?? null
+  const current = getModuleById(currentId) ?? null
   const done = modules.filter(m => progress[m.id]?.done).length
   const openModule = useCallback(id => { const index = modules.findIndex(m => (m.id === id || m.slug === id)); if (index < 0) { setCurrentId(null); return } if (index > 0 && !progress[modules[index - 1]?.id]?.done) return; setCurrentId(modules[index].id) }, [progress])
   const openNextModule = useCallback(() => {

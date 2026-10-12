@@ -14,7 +14,15 @@ export default function App() {
   const current = modules.find(m => m.id === currentId) ?? null
   const done = modules.filter(m => progress[m.id]?.done).length
   const openModule = useCallback(id => { const index = modules.findIndex(m => (m.id === id || m.slug === id)); if (index < 0) { setCurrentId(null); return } if (index > 0 && !progress[modules[index - 1]?.id]?.done) return; setCurrentId(modules[index].id) }, [progress])
-  const openNextModule = useCallback(() => { const active = modules.find(m => m.id === currentId); const nextId = active?.nextModuleId; const next = nextId ? modules.find(m => m.id === nextId || m.slug === nextId) : null; if (next && progress[currentId]?.done) setCurrentId(next.id); else setCurrentId(null) }, [currentId, progress])
+  const openNextModule = useCallback(() => {
+    const active = modules.find(m => m?.id === currentId)
+    const nextId = active?.nextId ?? active?.nextModuleId ?? null
+    const next = nextId ? modules.find(m => m?.id === nextId || m?.slug === nextId) : null
+    // Tombol ini hanya tersedia setelah 10/10 soal pemahaman; jangan bergantung
+    // pada waktu pembaruan local state progress untuk melakukan navigasi.
+    if (next) setCurrentId(next.id)
+    else setCurrentId(null)
+  }, [currentId])
   const toggleTheme = () => setTheme(old => {
     const next = old === 'light' ? 'dark' : 'light'
     try { localStorage.setItem('matematikaku:theme', next) } catch {}

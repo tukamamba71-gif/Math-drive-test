@@ -3,4 +3,4 @@ export const tiers = [
   { id: 'menengah', title: 'Menengah', desc: 'Gunakan konsep dasar untuk simbol, bentuk, dan hubungan.' },
   { id: 'lanjut', title: 'Lanjutan', desc: 'Bangun penalaran bertahap menuju masalah yang lebih kompleks.' }
 ]
-export { modules } from './atomicModules'
+export { modules, getModuleById, getNextModule } from './atomicModules'

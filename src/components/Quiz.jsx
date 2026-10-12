@@ -7,9 +7,9 @@ import ProgressBar from './ProgressBar'
 import { PASS_RATIO } from '../hooks/useProgress'
 import { generateQuiz } from '../lib/quizGenerator'
 
-export default function Quiz({ questions: initialQuestions = [], topic = 'addition', moduleTitle = 'materi ini', onFinish, onExit }) {
+export default function Quiz({ questions: initialQuestions = [], topic = 'addition', moduleTitle = 'materi ini', onFinish, onExit, onNextModule }) {
   const [batch, setBatch] = useState(0)
-  const [questions, setQuestions] = useState(() => initialQuestions.length ? initialQuestions : generateQuiz(topic, 5, 'Dasar'))
+  const [questions, setQuestions] = useState(() => initialQuestions.length ? initialQuestions : generateQuiz(topic, 10, 'Dasar'))
   const [i, setI] = useState(0)
   const [picked, setPicked] = useState(null)
   const [score, setScore] = useState(0)
@@ -28,7 +28,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
   }
   const newPractice = () => {
     const nextBatch = batch + 1
-    setBatch(nextBatch); setQuestions(generateQuiz(topic, 5, nextBatch % 3 === 0 ? 'HOTS / Penalaran' : nextBatch % 2 ? 'Dasar' : 'Menengah', String(nextBatch)))
+    setBatch(nextBatch); setQuestions(generateQuiz(topic, 10, nextBatch % 3 === 0 ? 'HOTS / Penalaran' : nextBatch % 2 ? 'Dasar' : 'Menengah', String(nextBatch)))
     setI(0); setPicked(null); setScore(0); setFinished(false); setDirection(1)
   }
   const restart = () => { setI(0); setPicked(null); setScore(0); setFinished(false); setDirection(-1) }
@@ -38,7 +38,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
     <p className="result-headline">{passed ? 'Bagus, kamu sudah memahami materi ini.' : 'Belum berhasil kali ini. Tidak apa-apa.'}</p>
     <p className="muted">{passed ? 'Hasil belajarmu sudah tersimpan. Kamu bisa lanjut ke materi berikutnya atau memperdalamnya.' : 'Nilai minimal 60% diperlukan untuk menyelesaikan modul. Pelajari pembahasan lalu berlatih kembali.'}</p>
     <div className="result-scorebar"><ProgressBar value={score} max={total} label={'Jawaban benar ' + Math.round(score / total * 100) + '%'}/></div>
-    <div className="row"><button className="btn" onClick={newPractice}><RefreshCw size={16}/> Latihan Soal Baru</button><button className="btn ghost" onClick={restart}><RotateCcw size={16}/> Ulangi set ini</button><button className="btn ghost" onClick={onExit}>Kembali ke materi</button></div>
+    <div className="row"><button className="btn" onClick={newPractice}><RefreshCw size={16}/> Latihan Soal Baru</button><button className="btn ghost" onClick={restart}><RotateCcw size={16}/> Ulangi set ini</button><button className="btn ghost" onClick={onExit}>Kembali ke materi</button>{passed&&onNextModule&&<button className="btn" onClick={onNextModule}>Materi berikutnya <span>→</span></button>}</div>
   </motion.div>
   return <motion.div className="panel quiz-panel" initial={{opacity:0,y:4}} animate={{opacity:1,y:0}} transition={{duration:.18,ease:'easeOut'}}>
     <div className="quiz-top"><div className="quiz-topic-title"><span className="quiz-topic-icon"><TopicIcon size={18}/></span><div><span className="eyebrow">LATIHAN DINAMIS</span><h3>{moduleTitle}</h3></div></div><span className="question-count">{i+1}<span> / {total}</span></span></div>

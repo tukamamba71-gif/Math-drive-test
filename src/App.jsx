@@ -13,7 +13,7 @@ export default function App() {
   const [accent, setAccent] = useState(() => { try { return localStorage.getItem('matematikaku:accent') || 'terracotta' } catch { return 'terracotta' } })
   const current = modules.find(m => m.id === currentId)
   const done = modules.filter(m => progress[m.id]?.done).length
-  const openModule = useCallback(id => setCurrentId(id), [])
+  const openModule = useCallback(id => { const index = modules.findIndex(m => m.id === id); if (index > 0 && !progress[modules[index - 1].id]?.done) return; setCurrentId(id) }, [progress])
   const toggleTheme = () => setTheme(old => {
     const next = old === 'light' ? 'dark' : 'light'
     try { localStorage.setItem('matematikaku:theme', next) } catch {}

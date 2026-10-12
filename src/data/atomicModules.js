@@ -32,7 +32,18 @@ const defs = [
  {id:'fungsi',tier:'lanjut',title:'Fungsi & Grafik',level:'Menengah',summary:'Domain, output, tabel nilai, dan membaca pola grafik.',topic:'functions',prereq:'trigonometri',concept:'Fungsi memasangkan setiap input dalam domain dengan tepat satu output. Notasi f(x) berarti nilai keluaran ketika masukan x diberikan.',rule:'Substitusikan input ke aturan fungsi dengan tanda kurung. Untuk grafik, baca sumbu, skala, dan pasangan koordinat (x, y) secara teliti.',steps:['Identifikasi aturan fungsi dan nilai input.','Ganti x dengan input menggunakan tanda kurung bila nilainya negatif.','Ikuti urutan operasi untuk menghitung output.','Catat pasangan (x, f(x)) dan periksa konsistensi grafik.'],problem:'Jika f(x) = 2x + 3, tentukan f(4).',work:['Aturan fungsi adalah f(x) = 2x + 3.','Ganti x dengan 4: f(4) = 2(4) + 3.','Hitung perkalian: 8 + 3 = 11.','Jadi f(4) = 11.'],context:'Fungsi memodelkan tarif berdasarkan jumlah pemakaian, hubungan jarak-waktu, dan pola data.'},
  {id:'limit',tier:'lanjut',title:'Pengantar Limit',level:'Lanjutan',summary:'Memahami nilai yang didekati fungsi sebelum kalkulus formal.',topic:'limits',prereq:'fungsi',concept:'Limit menjelaskan nilai yang didekati f(x) ketika x mendekati suatu nilai. Nilai limit tidak selalu sama dengan nilai fungsi tepat di titik itu.',rule:'Mulai dengan substitusi langsung jika fungsi kontinu di titik yang dituju. Jika muncul bentuk tak tentu seperti 0/0, perlu penyederhanaan atau metode lain sebelum menyimpulkan.',steps:['Tentukan nilai x yang didekati.','Coba substitusi langsung dan hitung secara hati-hati.','Jika hasil berupa bilangan terdefinisi, itulah kandidat limit untuk fungsi kontinu di titik tersebut.','Jika muncul bentuk tak tentu, jangan menyebutnya sebagai jawaban; sederhanakan ekspresi sesuai teknik yang sudah dipelajari.'],problem:'Tentukan limit x→2 dari f(x)=x+3.',work:['Periksa ekspresi f(x) = x + 3 yang kontinu.','Substitusikan x = 2.','Hitung 2 + 3 = 5.','Jadi limitnya 5.'],context:'Gagasan limit menjadi dasar untuk memahami kemiringan sesaat dan luas di bawah kurva dalam kalkulus.'}
 ]
+// Build a stable, explicit navigation chain from the canonical module IDs above.
+const moduleIds = new Set(defs.map((d) => d.id))
 export const modules = defs.map((d, index) => {
  const content = makeLesson(d.title, d.concept, d.rule, d.steps, { problem: d.problem, steps: d.work }, d.context)
- return { ...d, ...content, quiz: [], order: index, slug: d.id, nextModuleId: defs[index + 1]?.id ?? null }
+ const nextId = defs[index + 1]?.id ?? null
+ return { ...d, ...content, quiz: [], order: index, nextId: nextId && moduleIds.has(nextId) ? nextId : null }
 })
+
+// Safe lookup helpers: callers can render a fallback instead of dereferencing missing data.
+export const getModuleById = (id) => modules.find((module) => module.id === id) ?? null
+export const getNextModule = (id) => {
+ const current = getModuleById(id)
+ if (!current?.nextId || !moduleIds.has(current.nextId)) return null
+ return getModuleById(current.nextId)
+}

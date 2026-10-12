@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, BookOpen, CheckCircle2, Lightbulb, ListChecks, PlayCircle } from 'lucide-react'
+import { ArrowLeft, BookOpen, CheckCircle2, Lightbulb, ListChecks, PlayCircle, Brain, Workflow, Compass, BadgeCheck } from 'lucide-react'
 import { Rich, Tex } from '../components/Tex'
 import Quiz from '../components/Quiz'
 const TABS=[['materi','Materi',BookOpen],['contoh','Contoh soal',ListChecks],['kuis','Kuis interaktif',PlayCircle]]
-function Lesson({blocks}) { return <article className="lesson-content">{blocks.map((b,i)=>b.type==='math'?<motion.div key={i} className="lesson-math" initial={{opacity:0,y:6}} animate={{opacity:1,y:0}} transition={{delay:i*.06}}><Tex block tex={b.tex}/></motion.div>:b.type==='heading'?<h3 key={i} className="lesson-subheading">{b.text}</h3>:<p key={i} className="lesson-paragraph"><Rich text={b.text}/></p>)}</article> }
+const LESSON_MARKS=[BookOpen,Brain,Workflow,Compass,BadgeCheck]
+function Lesson({blocks}) { let section=0; return <article className="lesson-content">{blocks.map((b,i)=>{if(b.type==='heading'){const Mark=LESSON_MARKS[Math.min(section++,LESSON_MARKS.length-1)];return <h3 key={i} className="lesson-subheading"><Mark size={16} aria-hidden="true"/><span>{b.text}</span></h3>}return b.type==='math'?<motion.div key={i} className="lesson-math" initial={{opacity:0,y:6}} animate={{opacity:1,y:0}} transition={{delay:i*.06}}><Tex block tex={b.tex}/></motion.div>:<p key={i} className="lesson-paragraph"><Rich text={b.text}/></p>})}</article> }
 function Example({ex}) { const [shown,setShown]=useState(0);return <motion.article className="example-card" layout><div className="example-kicker"><Lightbulb size={16}/> CONTOH TERURAI</div><h3>{ex.title}</h3><div className="example-problem"><span>SOAL</span><p><Rich text={ex.problem}/></p></div><ol className="steps">{ex.steps.slice(0,shown).map((s,i)=><motion.li key={i} initial={{opacity:0,x:-8}} animate={{opacity:1,x:0}}><span className="step-number">{i+1}</span><div><strong>Langkah {i+1}</strong><p><Rich text={s}/></p></div></motion.li>)}</ol>{shown<ex.steps.length?<button className="btn" onClick={()=>setShown(shown+1)}>{shown===0?'Mulai penyelesaian':'Tampilkan langkah berikutnya'} <span>→</span></button>:<div className="example-complete"><CheckCircle2 size={16}/> Selesai! Coba jelaskan kembali langkahnya dengan kata-katamu sendiri.<button className="link" onClick={()=>setShown(0)}>Ulangi dari awal</button></div>}</motion.article> }
 export default function ModulePage({mod,onBack,onFinish}) {
   const [tab,setTab]=useState('materi')

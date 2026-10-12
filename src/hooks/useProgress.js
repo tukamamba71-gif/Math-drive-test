@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 const KEY='matematikaku:progress:v2'
 const LEGACY_KEY='matematikaku:progress:v1'
-export const PASS_RATIO=.6
+export const PASS_RATIO=1
 const today=()=>new Date().toLocaleDateString('sv-SE')
 const yesterday=()=>{const d=new Date();d.setDate(d.getDate()-1);return d.toLocaleDateString('sv-SE')}
 const load=()=>{try{const newer=localStorage.getItem(KEY);if(newer)return JSON.parse(newer);const old=JSON.parse(localStorage.getItem(LEGACY_KEY)||'{}');return old||{}}catch{return {}}}

@@ -1,0 +1,7 @@
+import {useState} from 'react'
+import {Rich,Tex} from '../components/Tex'
+import Quiz from '../components/Quiz'
+const TABS=[['materi','Materi'],['contoh','Contoh Soal'],['kuis','Kuis']]
+function Lesson({blocks}){return <article className="panel">{blocks.map((b,i)=>b.type==='math'?<Tex key={i} block tex={b.tex}/>:<p key={i}><Rich text={b.text}/></p>)}</article>}
+function Example({ex}){const [shown,setShown]=useState(0);return <article className="panel"><h3>{ex.title}</h3><p><Rich text={ex.problem}/></p><ol className="steps">{ex.steps.slice(0,shown).map((s,i)=><li key={i}><Rich text={s}/></li>)}</ol>{shown<ex.steps.length?<button className="btn" onClick={()=>setShown(shown+1)}>{shown===0?'Tampilkan langkah pertama':'Langkah berikutnya'}</button>:<button className="link" onClick={()=>setShown(0)}>Ulangi dari awal</button>}</article>}
+export default function ModulePage({mod,onBack,onFinish}){const [tab,setTab]=useState('materi');return <section><button className="link" onClick={onBack}>← Jalur belajar</button><h1>{mod.title}</h1><nav className="tabs">{TABS.map(([id,label])=><button key={id} className={'tab'+(tab===id?' active':'')} onClick={()=>setTab(id)}>{label}</button>)}</nav>{tab==='materi'&&<Lesson blocks={mod.lesson}/ >}{tab==='contoh'&&mod.examples.map(ex=><Example key={ex.title} ex={ex}/>)}{tab==='kuis'&&<Quiz questions={mod.quiz} onFinish={onFinish} onExit={onBack}/>}</section>}

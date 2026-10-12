@@ -36,7 +36,7 @@ export default function Quiz({ questions: initialQuestions = [], topic = 'additi
     <div className={'result-orb ' + (passed ? 'success' : 'retry')}>{passed ? <Sparkles size={25}/> : <RotateCcw size={24}/>}</div>
     <div className="eyebrow">{passed ? 'SELESAI' : 'COBA LAGI'}</div><h2>{score} <span>/ {total}</span></h2>
     <p className="result-headline">{passed ? 'Bagus, kamu sudah memahami materi ini.' : 'Belum berhasil kali ini. Tidak apa-apa.'}</p>
-    <p className="muted">{passed ? 'Hasil belajarmu sudah tersimpan. Kamu bisa lanjut ke materi berikutnya atau memperdalamnya.' : 'Nilai minimal 60% diperlukan untuk menyelesaikan modul. Pelajari pembahasan lalu berlatih kembali.'}</p>
+    <p className="muted">{passed ? 'Hasil belajarmu sudah tersimpan. Tekan “Latihan Soal Baru” untuk membuat 20 soal baru, atau lanjut jika sudah mencapai 100%.' : 'Target kelulusan adalah 100% (20 dari 20 soal). Pelajari pembahasan lalu tekan “Latihan Soal Baru” untuk mendapatkan set soal baru.'}</p>
     <div className="result-scorebar"><ProgressBar value={score} max={total} label={'Jawaban benar ' + Math.round(score / total * 100) + '%'}/></div>
     <div className="row"><button className="btn" onClick={newPractice}><RefreshCw size={16}/> Latihan Soal Baru</button><button className="btn ghost" onClick={restart}><RotateCcw size={16}/> Ulangi set ini</button><button className="btn ghost" onClick={onExit}>Kembali ke materi</button>{passed&&onNextModule&&<button className="btn" onClick={onNextModule}>Materi berikutnya <span>→</span></button>}</div>
   </motion.div>
